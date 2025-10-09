@@ -1,4 +1,5 @@
 // ved ikke med type ENUM og selv navnet transaktion
+// skal den hedde Transaction eller CreateTransaction?
 
 CREATE PROCEDURE Transaction(
     IN p_account_id INT,

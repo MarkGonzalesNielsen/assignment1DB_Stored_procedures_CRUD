@@ -1,3 +1,5 @@
+
+
 Tabel	Create	Read	Update	Delete	Kommentar
 User	✅	✅	✅	✅	Centrale CRUD tjek
 Account	✅	✅	✅	✅	Bruges aktivt tjek
