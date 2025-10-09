@@ -1,4 +1,4 @@
-CREATE PROCEDURE CreateGoal(
+CREATE PROCEDURE CreateBudget(
     IN p_user_id INT,
     IN p_amount FLOAT,
     IN p_budget_date DATE,

@@ -1,4 +1,4 @@
-CREATE PROCEDURE CreateGoal(
+CREATE PROCEDURE CreateCategory(
     IN p_user_id INT,
     IN p_name VARCHAR(45),
     IN p_type FLOAT,
