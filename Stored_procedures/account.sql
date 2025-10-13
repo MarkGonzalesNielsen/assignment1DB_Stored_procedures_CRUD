@@ -1,4 +1,5 @@
-DELIMITER //
+//CALL CreateAccount(5, 'Savings Account', 10000000.0);
+
 CREATE PROCEDURE CreateAccount(
     IN p_user_id INT,
     IN p_name VARCHAR(45),
@@ -7,28 +8,26 @@ CREATE PROCEDURE CreateAccount(
 BEGIN
     INSERT INTO Account (user_id, name, saldo)
     VALUES (p_user_id, p_name, p_saldo);
-END //
-DELIMITER ;
+END 
 
-DELIMITER //
+//CALL GetAllAccounts();
+
 
 CREATE PROCEDURE GetAllAccounts()
 BEGIN
-    SELECT idAccount, user_id, name, saldo
+    SELECT idAccount, name, saldo
     from Account;
 END 
-DELIMITER;
 
-DELIMITER //
-Create PROCEDURE GetAccountbyId(IN p_account_id INT)
+CREATE PROCEDURE GetAccountById(IN p_id INT)
 BEGIN
-    SELECT idAccount, user_id, name, saldo
+    SELECT idAccount, User_idUser, name, saldo
     FROM Account
-    WHERE idAccount = p_account_id;
+    WHERE idAccount = p_id;
 END
-DELIMITER;
 
-DELIMITER //
+//CALL UpdateAccount(1, 'Updated Account Name', 1500.0);
+
 CREATE PROCEDURE UpdateAccount(
     IN p_account_id INT,
     IN p_name VARCHAR(45),
@@ -40,12 +39,9 @@ BEGIN
         saldo = p_saldo
     WHERE idAccount = p_account_id;
 END
-DELIMITER; 
 
-DELIMITER //
 CREATE PROCEDURE DeleteAccount(IN p_account_id INT)
 BEGIN
     DELETE FROM Account WHERE idAccount = p_account_id;
 END
-DELIMITER ;
 
