@@ -103,7 +103,63 @@ CREATE TABLE `Transaktion` (
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
-Part 2 alter tables:
+Part 2 populate tables:
+
+USE mydb;
+
+-- Populate User table
+INSERT INTO User (idUser, username, password, email, created_at)
+VALUES
+(1, 'mark', 'password123', 'mark@example.com', '2025-01-01'),
+(2, 'anna', 'securepass', 'anna@example.com', '2025-02-15'),
+(3, 'john', 'mypassword', 'john@example.com', '2025-03-10');
+
+-- Populate Account table
+INSERT INTO Account (idAccount, name, saldo, User_idUser)
+VALUES
+(1, 'Main Account', 5000.00, 1),
+(2, 'Savings Account', 12000.00, 1),
+(3, 'Holiday Fund', 2000.00, 2),
+(4, 'Checking', 750.00, 3);
+
+-- Populate Category table
+INSERT INTO Category (idCategory, name, type)
+VALUES
+(1, 'Groceries', 'Expense'),
+(2, 'Rent', 'Expense'),
+(3, 'Salary', 'Income'),
+(4, 'Entertainment', 'Expense'),
+(5, 'Savings', 'Income');
+
+-- Populate Transaktion table
+INSERT INTO Transaktion (idTransaktion, amount, description, date, type, Category_idCategory, Account_idAccount)
+VALUES
+(1, 3000.00, 'Monthly Salary', '2025-09-30', 'income', 3, 1),
+(2, 150.00, 'Groceries at Supermarket', '2025-10-01', 'expends', 1, 1),
+(3, 700.00, 'Monthly Rent', '2025-10-02', 'expends', 2, 1),
+(4, 200.00, 'Cinema and Snacks', '2025-10-03', 'expends', 4, 1),
+(5, 500.00, 'Transfer to Savings', '2025-10-04', 'expends', 5, 1),
+(6, 1000.00, 'Freelance Project', '2025-09-29', 'income', 3, 4);
+
+-- Populate Budget table
+INSERT INTO Budget (idBudget, amount, budget_date, Category_idCategory, User_idUser)
+VALUES
+(1, 400.00, '2025-10-01', 1, 1),
+(2, 800.00, '2025-10-01', 2, 1),
+(3, 200.00, '2025-10-01', 4, 1),
+(4, 500.00, '2025-10-01', 1, 2),
+(5, 1000.00, '2025-10-01', 2, 3);
+
+-- Populate Goal table
+INSERT INTO Goal (idGoal, name, target_amount, current_amount, target_date, status, User_idUser)
+VALUES
+(1, 'Buy New Laptop', 8000.00, 3000.00, '2025-12-31', 'in progress', 1),
+(2, 'Vacation in Spain', 5000.00, 2000.00, '2025-07-01', 'in progress', 2),
+(3, 'Emergency Fund', 10000.00, 7000.00, '2026-01-01', 'in progress', 3);
+
+
+
+Part 3 alter tables:
 
 
 -- MySQL Workbench Synchronization
