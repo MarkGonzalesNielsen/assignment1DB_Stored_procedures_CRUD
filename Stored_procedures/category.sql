@@ -39,3 +39,36 @@ BEGIN
 END 
 
 
+CREATE FUNCTION fn_GetTotalSpentByCategory (p_category_id INT)
+RETURNS FLOAT
+READS sql data
+BEGIN
+DECLARE v_total_spent FLOAT DEFAULT 0.0;
+
+SELECT sum(T.amount)
+    INTO v_total_spent
+    FROM Transaktion T
+    WHERE T.Category_idCategory = p_category_id
+      AND T.type = 'expends';
+
+IF v_total_spent IS NULL THEN
+        RETURN v_total_spent;
+    END IF;
+
+RETURN v_total_spent;
+END
+
+//Måde at bruge den på: 
+
+SELECT 
+    b.idBudget,
+    c.name AS CategoryName,
+    b.amount AS BudgetAmount,
+    -- Henter det faktiske forbrug via din nye funktion
+    fn_GetTotalSpentByCategory(c.idCategory) AS ActualSpent,
+    -- Beregner det resterende beløb
+    b.amount - fn_GetTotalSpentByCategory(c.idCategory) AS Remaining
+FROM 
+    Budget b
+JOIN 
+    Category c ON b.Category_idCategory = c.idCategory;

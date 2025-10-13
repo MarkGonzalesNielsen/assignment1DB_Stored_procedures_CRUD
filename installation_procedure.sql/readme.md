@@ -1,0 +1,1 @@
+Copy paste code into SQL workbench 

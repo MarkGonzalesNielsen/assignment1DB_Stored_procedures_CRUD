@@ -37,3 +37,22 @@ CREATE PROCEDURE DeleteBudget(IN p_budget_id INT)
 BEGIN
     DELETE FROM Budget WHERE idBudget = p_budget_id;
 END
+
+
+
+CREATE PROCEDURE StartNewBudgetMonth ()
+BEGIN
+DECLARE next_month_date DATE;
+    SET next_month_date = DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY);
+
+    INSERT INTO Budget (amount, budget_date, Category_idCategory, Account_idAccount)
+    SELECT 
+        B.amount, 
+        next_month_date,
+        B.Category_idCategory,
+        B.Account_idAccount
+    FROM 
+        Budget B
+    Where
+    B.budget_date = (SELECT MAX(budget_date) FROM Budget);
+END
