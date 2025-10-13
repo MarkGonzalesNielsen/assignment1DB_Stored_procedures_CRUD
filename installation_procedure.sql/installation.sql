@@ -1,3 +1,111 @@
+Part 1 create schema + tables:
+
+-- Create schema
+CREATE DATABASE IF NOT EXISTS mydb
+  DEFAULT CHARACTER SET utf8
+  DEFAULT COLLATE utf8_general_ci;
+USE mydb;
+
+-- -----------------------------------------------------
+-- Table `User`
+-- -----------------------------------------------------
+CREATE TABLE `User` (
+  `idUser` INT AUTO_INCREMENT PRIMARY KEY,
+  `username` VARCHAR(45),
+  `password` VARCHAR(45),
+  `email` VARCHAR(45),
+  `created_at` DATE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- -----------------------------------------------------
+-- Table `Account`
+-- -----------------------------------------------------
+CREATE TABLE `Account` (
+  `idAccount` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(45),
+  `saldo` FLOAT,
+  `User_idUser` INT,
+  CONSTRAINT `fk_Account_User1`
+    FOREIGN KEY (`User_idUser`)
+    REFERENCES `User` (`idUser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- -----------------------------------------------------
+-- Table `Category`
+-- -----------------------------------------------------
+CREATE TABLE `Category` (
+  `idCategory` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(45),
+  `type` VARCHAR(45)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- -----------------------------------------------------
+-- Table `Budget`
+-- -----------------------------------------------------
+CREATE TABLE `Budget` (
+  `idBudget` INT AUTO_INCREMENT PRIMARY KEY,
+  `amount` FLOAT,
+  `budget_date` DATE,
+  `Category_idCategory` INT,
+  `User_idUser` INT,
+  CONSTRAINT `fk_Budget_Category1`
+    FOREIGN KEY (`Category_idCategory`)
+    REFERENCES `Category` (`idCategory`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Budget_User1`
+    FOREIGN KEY (`User_idUser`)
+    REFERENCES `User` (`idUser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- -----------------------------------------------------
+-- Table `Goal`
+-- -----------------------------------------------------
+CREATE TABLE `Goal` (
+  `idGoal` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(45),
+  `target_amount` FLOAT,
+  `current_amount` FLOAT,
+  `target_date` DATE,
+  `status` VARCHAR(45),
+  `User_idUser` INT,
+  CONSTRAINT `fk_Goal_User1`
+    FOREIGN KEY (`User_idUser`)
+    REFERENCES `User` (`idUser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- -----------------------------------------------------
+-- Table `Transaktion`
+-- -----------------------------------------------------
+CREATE TABLE `Transaktion` (
+  `idTransaktion` INT AUTO_INCREMENT PRIMARY KEY,
+  `amount` FLOAT,
+  `description` VARCHAR(45),
+  `date` DATE,
+  `type` ENUM('income', 'expends'),
+  `Category_idCategory` INT,
+  `Account_idAccount` INT,
+  CONSTRAINT `fk_Transaktion_Category1`
+    FOREIGN KEY (`Category_idCategory`)
+    REFERENCES `Category` (`idCategory`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Transaktion_Account1`
+    FOREIGN KEY (`Account_idAccount`)
+    REFERENCES `Account` (`idAccount`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+Part 2 alter tables:
+
+
 -- MySQL Workbench Synchronization
 -- Generated: 2025-10-09 16:07
 -- Model: New Model
