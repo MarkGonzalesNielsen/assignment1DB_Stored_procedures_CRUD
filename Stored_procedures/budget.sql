@@ -1,25 +1,27 @@
 CREATE PROCEDURE CreateBudget(
     IN p_user_id INT,
     IN p_amount FLOAT,
-    IN p_budget_date DATE,
+    IN p_budget_date DATE
 )
 BEGIN
-    INSERT INTO Budget (user_id, amount, budget_date)
+    INSERT INTO Budget (User_idUser, amount, budget_date)
     VALUES (p_user_id, p_amount, p_budget_date);
 END
 
+
 CREATE PROCEDURE GetAllBudgets()
 BEGIN
-    SELECT idBudget, user_id, amount, budget_date
+    SELECT idBudget, User_idUser, Category_idCategory, amount, budget_date
     FROM Budget;
 END
 
 CREATE PROCEDURE GetBudgetById(IN p_budget_id INT)
 BEGIN
-    SELECT idBudget, user_id, amount, budget_date
+    SELECT idBudget, User_idUser, Category_idCategory, amount, budget_date
     FROM Budget
     WHERE idBudget = p_budget_id;
 END
+
 
 CREATE PROCEDURE UpdateBudget(
     IN p_budget_id INT,
@@ -40,6 +42,8 @@ END
 
 
 
+
+
 CREATE PROCEDURE StartNewBudgetMonth ()
 BEGIN
 DECLARE next_month_date DATE;
@@ -56,3 +60,20 @@ DECLARE next_month_date DATE;
     Where
     B.budget_date = (SELECT MAX(budget_date) FROM Budget);
 END
+
+//*
+CREATE PROCEDURE StartNewBudgetMonth ()
+BEGIN
+    DECLARE next_month_date DATE;
+    SET next_month_date = DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY);
+
+    INSERT INTO Budget (User_idUser, amount, budget_date, Category_idCategory)
+    SELECT 
+        B.User_idUser,
+        B.amount, 
+        next_month_date,
+        B.Category_idCategory
+    FROM Budget B
+    WHERE B.budget_date = (SELECT MAX(budget_date) FROM Budget);
+END
+*/
