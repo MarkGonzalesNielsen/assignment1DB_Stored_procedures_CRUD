@@ -1,3 +1,7 @@
+USE dit_database_navn;
+
+DELIMITER //
+
 CREATE PROCEDURE CreateBudget(
     IN p_user_id INT,
     IN p_amount FLOAT,
@@ -6,22 +10,20 @@ CREATE PROCEDURE CreateBudget(
 BEGIN
     INSERT INTO Budget (User_idUser, amount, budget_date)
     VALUES (p_user_id, p_amount, p_budget_date);
-END
-
+END //
 
 CREATE PROCEDURE GetAllBudgets()
 BEGIN
     SELECT idBudget, User_idUser, Category_idCategory, amount, budget_date
     FROM Budget;
-END
+END //
 
 CREATE PROCEDURE GetBudgetById(IN p_budget_id INT)
 BEGIN
     SELECT idBudget, User_idUser, Category_idCategory, amount, budget_date
     FROM Budget
     WHERE idBudget = p_budget_id;
-END
-
+END //
 
 CREATE PROCEDURE UpdateBudget(
     IN p_budget_id INT,
@@ -33,36 +35,15 @@ BEGIN
     SET amount = p_amount,
         budget_date = p_budget_date
     WHERE idBudget = p_budget_id;
-END
+END //
 
 CREATE PROCEDURE DeleteBudget(IN p_budget_id INT)
 BEGIN
     DELETE FROM Budget WHERE idBudget = p_budget_id;
-END
+END //
 
-
-
-
-
-CREATE PROCEDURE StartNewBudgetMonth ()
-BEGIN
-DECLARE next_month_date DATE;
-    SET next_month_date = DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY);
-
-    INSERT INTO Budget (amount, budget_date, Category_idCategory, Account_idAccount)
-    SELECT 
-        B.amount, 
-        next_month_date,
-        B.Category_idCategory,
-        B.Account_idAccount
-    FROM 
-        Budget B
-    Where
-    B.budget_date = (SELECT MAX(budget_date) FROM Budget);
-END
-
-//*
-CREATE PROCEDURE StartNewBudgetMonth ()
+-- Her er din "StartNewBudgetMonth"-procedure
+CREATE PROCEDURE StartNewBudgetMonth()
 BEGIN
     DECLARE next_month_date DATE;
     SET next_month_date = DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY);
@@ -75,5 +56,16 @@ BEGIN
         B.Category_idCategory
     FROM Budget B
     WHERE B.budget_date = (SELECT MAX(budget_date) FROM Budget);
-END
-*/
+END //
+
+DELIMITER ;
+
+//test:
+CALL CreateBudget(1, 5000.00, '2025-11-01');
+CALL GetAllBudgets();
+CALL GetBudgetById(1);
+CALL UpdateBudget(1, 6000.00, '2025-12-01');
+CALL DeleteBudget(1);
+CALL StartNewBudgetMonth();
+
+
