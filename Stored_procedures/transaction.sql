@@ -1,7 +1,11 @@
 // ved ikke med type ENUM og selv navnet transaktion
 // skal den hedde Transaction eller CreateTransaction?
 
-CREATE PROCEDURE Transaction(
+USE dit_database_navn;
+
+DELIMITER //
+
+CREATE PROCEDURE CreateTransaction(
     IN p_account_id INT,
     IN p_amount FLOAT,
     IN p_description VARCHAR(45),
@@ -10,22 +14,22 @@ CREATE PROCEDURE Transaction(
     IN p_category_id INT
 )
 BEGIN
-    INSERT INTO Transaction (account_id, amount, description, date, type, category_id)
+    INSERT INTO Transaktion (account_id, amount, description, date, type, category_id)
     VALUES (p_account_id, p_amount, p_description, p_date, p_type, p_category_id);
-END
+END //
 
 CREATE PROCEDURE GetAllTransactions()
 BEGIN
     SELECT idTransaction, account_id, amount, description, date, type, category_id
-    FROM Transaction;
-END
+    FROM Transaktion;
+END //
 
 CREATE PROCEDURE GetTransactionById(IN p_transaction_id INT)
 BEGIN
     SELECT idTransaction, account_id, amount, description, date, type, category_id
-    FROM Transaction
+    FROM Transaktion
     WHERE idTransaction = p_transaction_id;
-END
+END //
 
 CREATE PROCEDURE UpdateTransaction(
     IN p_transaction_id INT,
@@ -37,7 +41,7 @@ CREATE PROCEDURE UpdateTransaction(
     IN p_category_id INT
 )
 BEGIN
-    UPDATE Transaction
+    UPDATE Transaktion
     SET account_id = p_account_id,
         amount = p_amount,
         description = p_description,
@@ -45,10 +49,12 @@ BEGIN
         type = p_type,
         category_id = p_category_id
     WHERE idTransaction = p_transaction_id;
-END
+END //
 
 CREATE PROCEDURE DeleteTransaction(IN p_transaction_id INT)
 BEGIN
-    DELETE FROM Transaction WHERE idTransaction = p_transaction_id;
-END
+    DELETE FROM Transaktion WHERE idTransaction = p_transaction_id;
+END //
+
+DELIMITER ;
 
