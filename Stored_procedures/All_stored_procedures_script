@@ -1,0 +1,316 @@
+USE dit_database_navn;
+
+DELIMITER //
+
+-- ===================================
+-- Account
+-- ===================================
+CREATE PROCEDURE CreateAccount(
+    IN p_user_id INT,
+    IN p_name VARCHAR(45),
+    IN p_saldo FLOAT
+)
+BEGIN
+    INSERT INTO Account (user_id, name, saldo)
+    VALUES (p_user_id, p_name, p_saldo);
+END //
+
+CREATE PROCEDURE GetAllAccounts()
+BEGIN
+    SELECT idAccount, user_id, name, saldo
+    FROM Account;
+END //
+
+CREATE PROCEDURE GetAccountById(IN p_id INT)
+BEGIN
+    SELECT idAccount, user_id, name, saldo
+    FROM Account
+    WHERE idAccount = p_id;
+END //
+
+CREATE PROCEDURE UpdateAccount(
+    IN p_account_id INT,
+    IN p_name VARCHAR(45),
+    IN p_saldo FLOAT
+)
+BEGIN
+    UPDATE Account
+    SET name = p_name,
+        saldo = p_saldo
+    WHERE idAccount = p_account_id;
+END //
+
+CREATE PROCEDURE DeleteAccount(IN p_account_id INT)
+BEGIN
+    DELETE FROM Account WHERE idAccount = p_account_id;
+END //
+
+-- ===================================
+-- Budget
+-- ===================================
+CREATE PROCEDURE CreateBudget(
+    IN p_user_id INT,
+    IN p_amount FLOAT,
+    IN p_budget_date DATE
+)
+BEGIN
+    INSERT INTO Budget (User_idUser, amount, budget_date)
+    VALUES (p_user_id, p_amount, p_budget_date);
+END //
+
+CREATE PROCEDURE GetAllBudgets()
+BEGIN
+    SELECT idBudget, User_idUser, Category_idCategory, amount, budget_date
+    FROM Budget;
+END //
+
+CREATE PROCEDURE GetBudgetById(IN p_budget_id INT)
+BEGIN
+    SELECT idBudget, User_idUser, Category_idCategory, amount, budget_date
+    FROM Budget
+    WHERE idBudget = p_budget_id;
+END //
+
+CREATE PROCEDURE UpdateBudget(
+    IN p_budget_id INT,
+    IN p_amount FLOAT,
+    IN p_budget_date DATE
+)
+BEGIN
+    UPDATE Budget
+    SET amount = p_amount,
+        budget_date = p_budget_date
+    WHERE idBudget = p_budget_id;
+END //
+
+CREATE PROCEDURE DeleteBudget(IN p_budget_id INT)
+BEGIN
+    DELETE FROM Budget WHERE idBudget = p_budget_id;
+END //
+
+CREATE PROCEDURE StartNewBudgetMonth()
+BEGIN
+    DECLARE next_month_date DATE;
+    SET next_month_date = DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY);
+
+    INSERT INTO Budget (User_idUser, amount, budget_date, Category_idCategory)
+    SELECT 
+        B.User_idUser,
+        B.amount, 
+        next_month_date,
+        B.Category_idCategory
+    FROM Budget B
+    WHERE B.budget_date = (SELECT MAX(budget_date) FROM Budget);
+END //
+
+-- ===================================
+-- Category + funktion
+-- ===================================
+CREATE PROCEDURE CreateCategory(
+    IN p_user_id INT,
+    IN p_name VARCHAR(45),
+    IN p_type FLOAT
+)
+BEGIN
+    INSERT INTO Category (user_id, name, type)
+    VALUES (p_user_id, p_name, p_type);
+END //
+
+CREATE PROCEDURE GetAllCategories()
+BEGIN
+    SELECT idCategory, user_id, name, type
+    FROM Category;
+END //
+
+CREATE PROCEDURE GetCategoryById(IN p_category_id INT)
+BEGIN
+    SELECT idCategory, user_id, name, type
+    FROM Category
+    WHERE idCategory = p_category_id;
+END //
+
+CREATE PROCEDURE UpdateCategory(
+    IN p_category_id INT,
+    IN p_name VARCHAR(45),
+    IN p_type FLOAT
+)
+BEGIN
+    UPDATE Category
+    SET name = p_name,
+        type = p_type
+    WHERE idCategory = p_category_id;
+END //
+
+CREATE PROCEDURE DeleteCategory(IN p_category_id INT)
+BEGIN
+    DELETE FROM Category WHERE idCategory = p_category_id;
+END //
+
+CREATE FUNCTION fn_GetTotalSpentByCategory(p_category_id INT)
+RETURNS FLOAT
+READS SQL DATA
+BEGIN
+    DECLARE v_total_spent FLOAT DEFAULT 0.0;
+
+    SELECT SUM(T.amount)
+    INTO v_total_spent
+    FROM Transaktion T
+    WHERE T.Category_idCategory = p_category_id
+      AND T.type = 'expends';
+
+    IF v_total_spent IS NULL THEN
+        SET v_total_spent = 0.0;
+    END IF;
+
+    RETURN v_total_spent;
+END //
+
+-- ===================================
+-- Goal
+-- ===================================
+CREATE PROCEDURE CreateGoal(
+    IN p_name VARCHAR(45),
+    IN p_target_amount FLOAT,
+    IN p_current_amount FLOAT,
+    IN p_target_date DATE,
+    IN p_status VARCHAR(45)
+)
+BEGIN
+    INSERT INTO Goal (name, target_amount, current_amount, target_date, status)
+    VALUES (p_name, p_target_amount, p_current_amount, p_target_date, p_status);
+END //
+
+CREATE PROCEDURE GetAllGoals()
+BEGIN
+    SELECT idGoal, name, target_amount, current_amount, target_date, status
+    FROM Goal;
+END //
+
+CREATE PROCEDURE GetGoalById(IN p_goal_id INT)
+BEGIN
+    SELECT idGoal, name, target_amount, current_amount, target_date, status
+    FROM Goal
+    WHERE idGoal = p_goal_id;
+END //
+
+CREATE PROCEDURE UpdateGoal(
+    IN p_goal_id INT,
+    IN p_name VARCHAR(45),
+    IN p_target_amount FLOAT,
+    IN p_current_amount FLOAT,
+    IN p_target_date DATE,
+    IN p_status VARCHAR(45)
+)
+BEGIN
+    UPDATE Goal
+    SET name = p_name,
+        target_amount = p_target_amount,
+        current_amount = p_current_amount,
+        target_date = p_target_date,
+        status = p_status
+    WHERE idGoal = p_goal_id;
+END //
+
+CREATE PROCEDURE DeleteGoal(IN p_goal_id INT)
+BEGIN
+    DELETE FROM Goal WHERE idGoal = p_goal_id;
+END //
+
+-- ===================================
+-- Transaction / Transaktion
+-- ===================================
+CREATE PROCEDURE CreateTransaction(
+    IN p_account_id INT,
+    IN p_amount FLOAT,
+    IN p_description VARCHAR(45),
+    IN p_date DATE,
+    IN p_type VARCHAR(45),
+    IN p_category_id INT
+)
+BEGIN
+    INSERT INTO Transaktion (account_id, amount, description, date, type, category_id)
+    VALUES (p_account_id, p_amount, p_description, p_date, p_type, p_category_id);
+END //
+
+CREATE PROCEDURE GetAllTransactions()
+BEGIN
+    SELECT idTransaction, account_id, amount, description, date, type, category_id
+    FROM Transaktion;
+END //
+
+CREATE PROCEDURE GetTransactionById(IN p_transaction_id INT)
+BEGIN
+    SELECT idTransaction, account_id, amount, description, date, type, category_id
+    FROM Transaktion
+    WHERE idTransaction = p_transaction_id;
+END //
+
+CREATE PROCEDURE UpdateTransaction(
+    IN p_transaction_id INT,
+    IN p_account_id INT,
+    IN p_amount FLOAT,
+    IN p_description VARCHAR(45),
+    IN p_date DATE,
+    IN p_type VARCHAR(45),
+    IN p_category_id INT
+)
+BEGIN
+    UPDATE Transaktion
+    SET account_id = p_account_id,
+        amount = p_amount,
+        description = p_description,
+        date = p_date,
+        type = p_type,
+        category_id = p_category_id
+    WHERE idTransaction = p_transaction_id;
+END //
+
+CREATE PROCEDURE DeleteTransaction(IN p_transaction_id INT)
+BEGIN
+    DELETE FROM Transaktion WHERE idTransaction = p_transaction_id;
+END //
+
+-- ===================================
+-- User
+-- ===================================
+CREATE PROCEDURE CreateUser(
+    IN p_username VARCHAR(45),
+    IN p_password VARCHAR(45),
+    IN p_email VARCHAR(45)
+)
+BEGIN
+    INSERT INTO User (username, password, email, created_at)
+    VALUES (p_username, p_password, p_email, NOW());
+END //
+
+CREATE PROCEDURE GetAllUsers()
+BEGIN
+    SELECT idUser, username, email, created_at
+    FROM User;
+END //
+
+CREATE PROCEDURE GetUserById(IN p_user_id INT)
+BEGIN
+    SELECT idUser, username, email, created_at
+    FROM User
+    WHERE idUser = p_user_id;
+END //
+
+CREATE PROCEDURE UpdateUser(
+    IN p_user_id INT,
+    IN p_username VARCHAR(45),
+    IN p_email VARCHAR(45)
+)
+BEGIN
+    UPDATE User
+    SET username = p_username,
+        email = p_email
+    WHERE idUser = p_user_id;
+END //
+
+CREATE PROCEDURE DeleteUser(IN p_user_id INT)
+BEGIN
+    DELETE FROM User WHERE idUser = p_user_id;
+END //
+
+DELIMITER ;
